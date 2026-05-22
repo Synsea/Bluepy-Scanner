@@ -1,0 +1,36 @@
+from bluepy.btle import Scanner
+import logging,time
+
+scanner=Scanner()
+
+logging.basicConfig(
+    filename="scan_bluetooth.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+print("Scan Bluetooth + logging... Ctrl+C pour arrêter")
+logging.info("Démarrage du scan Bluetooth")
+
+try:
+    while True:
+        try:
+            devices=scanner.scan(timeout=5.0)
+        except Exception as e:
+            print("Erreur scan :",e)
+            logging.error(f"Erreur scan : {e}")
+            continue
+
+        for device in devices:
+            print(device.addr,"|",device.addrType,"| RSSI=",device.rssi,"dB")
+            logging.info(f"{device.addr} | {device.addrType} | RSSI={device.rssi} dB")
+
+            for adtype,description,value in device.getScanData():
+                print(description,"=",value)
+                logging.info(f"{device.addr} | {description} = {value}")
+
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("\nScan arrêté")
+    logging.info("Arrêt du scan Bluetooth")
