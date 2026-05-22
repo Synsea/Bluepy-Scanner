@@ -1,0 +1,49 @@
+from bluepy.btle import Scanner
+import logging,time
+
+scanner=Scanner()
+
+CAPTEURS={
+"Mac":"Name",
+}
+
+logging.basicConfig(
+    filename="scan_capteurs.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+print("Scan capteurs + logging... Ctrl+C pour arrêter")
+logging.info("Démarrage du scan capteurs")
+
+try:
+    while True:
+        try:
+            devices=scanner.scan(timeout=5.0)
+        except Exception as e:
+            print("Erreur scan :",e)
+            logging.error(f"Erreur scan : {e}")
+            continue
+
+        for device in devices:
+            addr=device.addr.lower()
+
+            if addr in CAPTEURS:
+                nom=CAPTEURS[addr]
+
+                print("\n"+nom)
+                print("Adresse :",addr)
+                print("Type :",device.addrType)
+                print("RSSI :",device.rssi,"dB")
+
+                logging.info(f"{nom} {addr} Type={device.addrType} RSSI={device.rssi} dB")
+
+                for adtype,description,value in device.getScanData():
+                    print(description,"=",value)
+                    logging.info(f"{nom} {addr} {description} = {value}")
+
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("\nScan arrêté")
+    logging.info("Arrêt du scan capteurs")
