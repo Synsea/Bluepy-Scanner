@@ -1,0 +1,42 @@
+from bluepy.btle import Scanner
+import csv,os,time
+from datetime import datetime
+
+scanner=Scanner()
+CSV="scan_capteurs.csv"
+
+CAPTEURS={
+"Mac":"nAME",
+}
+
+if not os.path.exists(CSV):
+    with open(CSV,"w",newline="") as f:
+        writer=csv.writer(f)
+        writer.writerow(["Date","Heure","Nom","Adresse","Type","RSSI","Description","Valeur"])
+
+print("Scan capteurs + CSV... Ctrl+C pour arrêter")
+
+try:
+    while True:
+        devices=scanner.scan(timeout=5.0)
+
+        for device in devices:
+            addr=device.addr.lower()
+
+            if addr in CAPTEURS:
+                now=datetime.now()
+                date=now.strftime("%d/%m/%Y")
+                heure=now.strftime("%H:%M:%S")
+                nom=CAPTEURS[addr]
+
+                print("\n"+nom,addr,"RSSI=",device.rssi,"dB")
+
+                for adtype,description,value in device.getScanData():
+                    with open(CSV,"a",newline="") as f:
+                        writer=csv.writer(f)
+                        writer.writerow([date,heure,nom,addr,device.addrType,device.rssi,description,value])
+
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("\nScan arrêté")
