@@ -5,10 +5,7 @@ from datetime import datetime
 scanner=Scanner()
 
 CAPTEURS={
-"d6:1c:bf:b7:76:62":"DEMO1",
-"d6:c6:c7:39:a2:e8":"DEMO2",
-"d7:ef:13:27:15:29":"DEMO3",
-"d1:bf:9d:01:3e:11":"DEMO4"
+"MAC":"Name",
 }
 
 logging.basicConfig(
